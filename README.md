@@ -1,73 +1,85 @@
-# Welcome to your Lovable project
+# Book Friend Connect
 
-## Project info
+> **"책을 고르는 게 아니라, 사람을 고르는 경험"**  
+> 큐레이터 기반 독서 추천 플랫폼 (프로토타입)
 
-**URL**: https://lovable.dev/projects/5d043ddd-13da-4cfb-83ee-9f9f51379bd7
+---
 
-## How can I edit this code?
+## 🧑‍💼 Persona
 
-There are several ways of editing your application.
+**독서 초보 직장인**
 
-**Use Lovable**
+- 평범한 직장인
+- 라이프스타일: 매일 똑같이 반복되는 삶 속에 새로운 취미를 가지고자 함
+- 목표: 출퇴근 시간을 활용한 꾸준한 독서 습관 형성
+- 니즈: 자신에게 맞는 책을 쉽게 추천받고 싶음
+- 페인 포인트:
+  - 책에 대한 정보 부족
+  - 어떤 책을 읽어야 할지 모름
+  - 선택 피로 및 실패에 대한 두려움
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/5d043ddd-13da-4cfb-83ee-9f9f51379bd7) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## 📘 사용자 시나리오
 
-**Use your preferred IDE**
+### ● 상황
+> “책을 취미로 가지려고 하긴 하는데, 내가 좋아하고 관심 있는 책이 무엇일지 모르겠다…”
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### ● 시나리오 플로우
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+1. 앱에 접속해 **팔로우순 큐레이터 리스트**를 탐색  
+2. 상위 큐레이터의 **자기소개 및 추천 책 리스트**를 열람  
+3. 그 중 **관심 가는 큐레이터**를 선택  
+4. 해당 큐레이터의 추천 리스트에서 책을 골라 **독서 시작**
 
-Follow these steps:
+### ● 사용자 스토리
+> “이제 책을 고르는 게 아니라, 나를 잘 아는 사람을 만나는 느낌이다.”
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+---
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## 🌟 핵심 가치 제안
 
-# Step 3: Install the necessary dependencies.
-npm i
+| 가치 키워드 | 설명 |
+|-------------|------|
+| **신뢰 기반 선택** | 큐레이터의 정체성과 언어를 통해 책을 신뢰하게 됨 |
+| **결정 피로 해소** | 책을 직접 고르지 않고 사람을 고름으로써 선택 스트레스 감소 |
+| **감정적 연결** | “이 사람이 고른 책이라면 믿고 본다”는 감정 이입 유도 |
+| **정체성 기반 큐레이션** | 베스트셀러 위주가 아닌, “나와 닮은 사람”을 기준으로 선택 |
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+---
 
-**Edit a file directly in GitHub**
+## 🧩 핵심 기능
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+- 큐레이터 기반 탐색 구조  
+  → 책이 아닌 **사람(큐레이터)** 을 중심으로 탐색 시작  
+- 큐레이터 프로필 및 추천 리스트 제공  
+  → 큐레이터의 자기소개, 책 추천 기준, 추천 목록 열람  
+- 관심 큐레이터 팔로우 및 추천 책 선택  
+  → 큐레이터에 기반한 **신뢰 중심 책 선택 경험** 제공
 
-**Use GitHub Codespaces**
+---
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🚧 구현 범위 (프로토타입 기준)
 
-## What technologies are used for this project?
+- 모든 데이터는 **Mocking 데이터(정적 JSON 등)** 를 사용  
+- 실제 로그인/DB 연동/댓글/검색 기능 등은 미구현
+- 핵심 경험 흐름 중심으로 UI 설계
 
-This project is built with:
+### 구현된 흐름:
+- 큐레이터 리스트 페이지
+- 큐레이터 프로필 상세 페이지
+- 추천 책 리스트 UI
+- 책 상세 및 '읽고 싶은 책' 저장 기능
+- 간단한 감정 기반 큐레이터 추천
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+---
 
-## How can I deploy this project?
+## 🔗 배포 링크
 
-Simply open [Lovable](https://lovable.dev/projects/5d043ddd-13da-4cfb-83ee-9f9f51379bd7) and click on Share -> Publish.
+👉 [Book Friend Connect](https://book-friend-connect.lovable.app)
 
-## Can I connect a custom domain to my Lovable project?
+---
 
-Yes, you can!
+## 📄 라이선스
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+본 프로젝트는 프로토타입 용도로만 사용되며, 저작권 및 상업적 목적은 포함되지 않습니다.
