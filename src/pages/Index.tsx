@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { Heart, Users, BookOpen, Star, ChevronRight, User, TrendingUp, Library, Filter } from 'lucide-react';
+import { Heart, Users, BookOpen, Star, ChevronRight, User, TrendingUp, Library, Filter, Database } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import CuratorProfile from '@/components/CuratorProfile';
 import UserProfile from '@/components/UserProfile';
+import TMIDatabase from '@/components/TMIDatabase';
+import DiscussionRoom from '@/components/DiscussionRoom';
 
 // 모킹 데이터 - 큐레이터들
 const curators = [
@@ -136,6 +138,8 @@ const genreCurators = {
 const Index = () => {
   const [selectedCurator, setSelectedCurator] = useState<number | null>(null);
   const [showUserProfile, setShowUserProfile] = useState(false);
+  const [showTMIDatabase, setShowTMIDatabase] = useState(false);
+  const [selectedDiscussion, setSelectedDiscussion] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState("curators");
 
   if (selectedCurator) {
@@ -145,6 +149,20 @@ const Index = () => {
 
   if (showUserProfile) {
     return <UserProfile onBack={() => setShowUserProfile(false)} />;
+  }
+
+  if (showTMIDatabase) {
+    return <TMIDatabase 
+      onBack={() => setShowTMIDatabase(false)} 
+      onDiscussionRoom={(bookId) => setSelectedDiscussion(bookId)}
+    />;
+  }
+
+  if (selectedDiscussion) {
+    return <DiscussionRoom 
+      bookId={selectedDiscussion} 
+      onBack={() => setSelectedDiscussion(null)}
+    />;
   }
 
   return (
@@ -158,6 +176,14 @@ const Index = () => {
               <p className="text-sm text-amber-700">나를 잘 아는 사람을 만나는 느낌</p>
             </div>
             <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setShowTMIDatabase(true)}
+                className="border-amber-200 text-amber-700 hover:bg-amber-50"
+              >
+                <Database className="h-4 w-4 mr-1" />
+                책 TMI
+              </Button>
               <Button
                 variant="outline"
                 onClick={() => setShowUserProfile(true)}
@@ -190,7 +216,7 @@ const Index = () => {
 
         {/* 탭 메뉴 */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 bg-white/70 backdrop-blur-sm mb-8">
+          <TabsList className="grid w-full grid-cols-4 bg-white/70 backdrop-blur-sm mb-8">
             <TabsTrigger value="curators" className="data-[state=active]:bg-amber-100 data-[state=active]:text-amber-900">
               <Users className="h-4 w-4 mr-2" />
               큐레이터 탐색
@@ -202,6 +228,10 @@ const Index = () => {
             <TabsTrigger value="by-genre" className="data-[state=active]:bg-amber-100 data-[state=active]:text-amber-900">
               <Library className="h-4 w-4 mr-2" />
               장르별 큐레이터
+            </TabsTrigger>
+            <TabsTrigger value="tmi" className="data-[state=active]:bg-amber-100 data-[state=active]:text-amber-900">
+              <Database className="h-4 w-4 mr-2" />
+              책 TMI & 토론
             </TabsTrigger>
           </TabsList>
 
@@ -441,6 +471,93 @@ const Index = () => {
                   </div>
                 </div>
               ))}
+            </div>
+          </TabsContent>
+
+          {/* 책 TMI & 토론 탭 */}
+          <TabsContent value="tmi">
+            <div className="mb-6">
+              <h3 className="text-xl font-bold text-amber-900 mb-2">
+                📚 책 속 숨겨진 이야기들
+              </h3>
+              <p className="text-amber-700">
+                책에 담긴 흥미로운 TMI를 발견하고, 다른 독자들과 이야기를 나눠보세요
+              </p>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2">
+              {/* TMI 데이터베이스 카드 */}
+              <Card 
+                className="soft-shadow border-0 bg-white/70 backdrop-blur-sm hover:bg-white/90 transition-all cursor-pointer"
+                onClick={() => setShowTMIDatabase(true)}
+              >
+                <CardContent className="p-6 text-center">
+                  <Database className="h-16 w-16 text-amber-500 mx-auto mb-4" />
+                  <h3 className="text-lg font-bold text-amber-900 mb-2">TMI 데이터베이스</h3>
+                  <p className="text-amber-700 mb-4">
+                    책에 숨겨진 흥미로운 이야기들을 발견해보세요
+                  </p>
+                  <div className="flex items-center justify-center gap-4 text-sm text-amber-600 mb-4">
+                    <span>📖 50+ 도서</span>
+                    <span>💡 200+ TMI</span>
+                    <span>✨ 매일 업데이트</span>
+                  </div>
+                  <Button className="cozy-gradient text-white hover:opacity-90 w-full">
+                    TMI 둘러보기
+                    <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* 인기 토론방 카드 */}
+              <Card className="soft-shadow border-0 bg-white/70 backdrop-blur-sm">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <BookOpen className="h-6 w-6 text-amber-500" />
+                    <h3 className="text-lg font-bold text-amber-900">인기 토론방</h3>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div 
+                      className="flex items-center gap-3 p-3 bg-amber-50/50 rounded-lg hover:bg-amber-50 transition-colors cursor-pointer"
+                      onClick={() => setSelectedDiscussion(1)}
+                    >
+                      <img
+                        src="https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=40&h=50&fit=crop"
+                        alt="아무튼, 술"
+                        className="w-8 h-10 object-cover rounded"
+                      />
+                      <div className="flex-1">
+                        <p className="font-medium text-amber-900 text-sm">아무튼, 술</p>
+                        <p className="text-xs text-amber-600">23개 댓글</p>
+                      </div>
+                    </div>
+                    
+                    <div 
+                      className="flex items-center gap-3 p-3 bg-amber-50/50 rounded-lg hover:bg-amber-50 transition-colors cursor-pointer"
+                      onClick={() => setSelectedDiscussion(2)}
+                    >
+                      <img
+                        src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=40&h=50&fit=crop"
+                        alt="긴긴밤"
+                        className="w-8 h-10 object-cover rounded"
+                      />
+                      <div className="flex-1">
+                        <p className="font-medium text-amber-900 text-sm">긴긴밤</p>
+                        <p className="text-xs text-amber-600">31개 댓글</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <Button 
+                    variant="outline" 
+                    className="w-full mt-4 border-amber-200 text-amber-700 hover:bg-amber-50"
+                    onClick={() => setShowTMIDatabase(true)}
+                  >
+                    모든 토론방 보기
+                  </Button>
+                </CardContent>
+              </Card>
             </div>
           </TabsContent>
         </Tabs>
