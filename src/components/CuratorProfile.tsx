@@ -1,6 +1,5 @@
-
 import { useState } from 'react';
-import { ArrowLeft, Heart, Users, BookOpen, Star, MessageCircle, Share2, ExternalLink } from 'lucide-react';
+import { ArrowLeft, Heart, Users, BookOpen, Star, MessageCircle, Share2, ExternalLink, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -26,7 +25,7 @@ interface CuratorProfileProps {
   onBack: () => void;
 }
 
-// 모킹 데이터 - 추천 도서들
+// 모킹 데이터 - 추천 도서들 (구매 링크 추가)
 const recommendedBooks = [
   {
     id: 1,
@@ -37,7 +36,9 @@ const recommendedBooks = [
     genre: "에세이",
     readingTime: "2시간",
     difficulty: "쉬움",
-    personalMessage: "이 책을 읽고 나면, 혼자만의 시간이 더 소중하게 느껴질 거예요."
+    personalMessage: "이 책을 읽고 나면, 혼자만의 시간이 더 소중하게 느껴질 거예요.",
+    purchaseUrl: "https://www.yes24.com/Product/Goods/123456",
+    price: "13,500원"
   },
   {
     id: 2,
@@ -48,7 +49,9 @@ const recommendedBooks = [
     genre: "소설",
     readingTime: "3시간",
     difficulty: "보통",
-    personalMessage: "불면의 밤이 외롭지 않게 해주는 책이에요."
+    personalMessage: "불면의 밤이 외롭지 않게 해주는 책이에요.",
+    purchaseUrl: "https://www.yes24.com/Product/Goods/234567",
+    price: "12,600원"
   },
   {
     id: 3,
@@ -57,9 +60,11 @@ const recommendedBooks = [
     cover: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=280&fit=crop",
     reason: "타인의 시선에서 벗어나 자신만의 속도로 살아가는 법을 알려주는 책이에요. 직장생활에 지쳤을 때 큰 위로가 됩니다.",
     genre: "자기계발",
-    readingTime: "4시간",
+    readingTime: "4시간", 
     difficulty: "쉬움",
-    personalMessage: "자신을 사랑하는 방법을 잊었을 때 다시 기억할 수 있게 해주는 책이에요."
+    personalMessage: "자신을 사랑하는 방법을 잊었을 때 다시 기억할 수 있게 해주는 책이에요.",
+    purchaseUrl: "https://www.yes24.com/Product/Goods/345678",
+    price: "14,400원"
   }
 ];
 
@@ -202,9 +207,12 @@ const CuratorProfile = ({ curator, onBack }: CuratorProfileProps) => {
                             <h3 className="text-xl font-bold text-amber-900 mb-1">{book.title}</h3>
                             <p className="text-amber-700">{book.author}</p>
                           </div>
-                          <Badge variant="outline" className="border-amber-200 text-amber-700">
-                            {book.genre}
-                          </Badge>
+                          <div className="text-right">
+                            <Badge variant="outline" className="border-amber-200 text-amber-700 mb-2">
+                              {book.genre}
+                            </Badge>
+                            <p className="text-sm font-semibold text-amber-800">{book.price}</p>
+                          </div>
                         </div>
 
                         <p className="text-amber-700 leading-relaxed mb-4">
@@ -225,9 +233,23 @@ const CuratorProfile = ({ curator, onBack }: CuratorProfileProps) => {
                         </div>
 
                         <div className="flex gap-2">
-                          <Button className="cozy-gradient text-white hover:opacity-90">
-                            <ExternalLink className="h-4 w-4 mr-1" />
-                            읽기 시작하기
+                          <Button 
+                            className="cozy-gradient text-white hover:opacity-90"
+                            onClick={() => window.open(book.purchaseUrl, '_blank')}
+                          >
+                            <ShoppingCart className="h-4 w-4 mr-1" />
+                            책 구매하기
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            className="border-amber-200 text-amber-700 hover:bg-amber-50"
+                            onClick={() => {
+                              // 위시리스트 추가 로직
+                              alert('읽고 싶은 책에 추가되었습니다! 📚');
+                            }}
+                          >
+                            <Heart className="h-4 w-4 mr-1" />
+                            읽고 싶어요
                           </Button>
                           <Button variant="outline" className="border-amber-200 text-amber-700 hover:bg-amber-50">
                             <MessageCircle className="h-4 w-4 mr-1" />
