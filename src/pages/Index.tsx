@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Heart, Users, BookOpen, Star, ChevronRight, User, TrendingUp, Library, Filter, Database } from 'lucide-react';
+import { Heart, Users, BookOpen, Star, ChevronRight, User, TrendingUp, Library, Filter, Database, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -8,6 +8,7 @@ import CuratorProfile from '@/components/CuratorProfile';
 import UserProfile from '@/components/UserProfile';
 import TMIDatabase from '@/components/TMIDatabase';
 import DiscussionRoom from '@/components/DiscussionRoom';
+import CuratorSurvey from '@/components/CuratorSurvey';
 
 // 모킹 데이터 - 큐레이터들
 const curators = [
@@ -140,6 +141,7 @@ const Index = () => {
   const [showUserProfile, setShowUserProfile] = useState(false);
   const [showTMIDatabase, setShowTMIDatabase] = useState(false);
   const [selectedDiscussion, setSelectedDiscussion] = useState<number | null>(null);
+  const [showSurvey, setShowSurvey] = useState(false);
   const [activeTab, setActiveTab] = useState("curators");
 
   if (selectedCurator) {
@@ -165,6 +167,16 @@ const Index = () => {
     />;
   }
 
+  if (showSurvey) {
+    return <CuratorSurvey 
+      onBack={() => setShowSurvey(false)}
+      onRecommendation={(curator) => {
+        setShowSurvey(false);
+        setSelectedCurator(curator.id);
+      }}
+    />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
       {/* 헤더 */}
@@ -173,9 +185,17 @@ const Index = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-amber-900">북프렌드</h1>
-              <p className="text-sm text-amber-700">나를 잘 아는 사람을 만나는 느낌</p>
+              <p className="text-sm text-amber-700">당신과 잘 맞는 큐레이터와 함께하는 독서</p>
             </div>
             <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setShowSurvey(true)}
+                className="border-amber-200 text-amber-700 hover:bg-amber-50"
+              >
+                <Star className="h-4 w-4 mr-1" />
+                맞춤 큐레이터 찾기
+              </Button>
               <Button
                 variant="outline"
                 onClick={() => setShowTMIDatabase(true)}
@@ -192,9 +212,6 @@ const Index = () => {
                 <User className="h-4 w-4 mr-1" />
                 내 프로필
               </Button>
-              <Button className="cozy-gradient text-white hover:opacity-90 transition-opacity">
-                내 취향 찾기
-              </Button>
             </div>
           </div>
         </div>
@@ -207,10 +224,10 @@ const Index = () => {
             어떤 책을 읽을지 고민이세요?
           </h2>
           <p className="text-lg text-amber-700 mb-2">
-            책을 고르는 것보다, <span className="font-semibold text-amber-800">나를 잘 아는 사람</span>을 먼저 찾아보세요
+            당신의 취향과 상황에 맞는 <span className="font-semibold text-amber-800">큐레이터</span>를 먼저 찾아보세요
           </p>
           <p className="text-amber-600">
-            그 사람이 추천하는 책이라면, 믿고 읽을 수 있을 거예요
+            신뢰할 수 있는 추천으로 더 나은 독서 경험을 시작하세요
           </p>
         </div>
 
@@ -240,7 +257,7 @@ const Index = () => {
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-2">
                 <Users className="h-5 w-5 text-amber-600" />
-                <span className="font-medium text-amber-800">팔로우순으로 정렬</span>
+                <span className="font-medium text-amber-800">추천순으로 정렬</span>
               </div>
               <div className="text-sm text-amber-600">
                 {curators.length}명의 큐레이터가 당신을 기다리고 있어요
@@ -278,6 +295,7 @@ const Index = () => {
                           <div>
                             <h3 className="text-xl font-bold text-amber-900 mb-1">{curator.name}</h3>
                             <p className="text-amber-700 font-medium">{curator.title}</p>
+                            <p className="text-sm text-amber-600 mt-1">{curator.specialty}</p>
                           </div>
                           <ChevronRight className="h-5 w-5 text-amber-400 flex-shrink-0" />
                         </div>
@@ -394,7 +412,8 @@ const Index = () => {
                             className="cozy-gradient text-white hover:opacity-90"
                             onClick={() => window.open(book.purchaseUrl, '_blank')}
                           >
-                            📚 책 구매하기
+                            <ExternalLink className="h-4 w-4 mr-1" />
+                            교보문고에서 구매
                           </Button>
                           <Button variant="outline" className="border-amber-200 text-amber-700 hover:bg-amber-50">
                             추천 큐레이터 보기
@@ -568,10 +587,14 @@ const Index = () => {
             아직 마음에 드는 큐레이터를 찾지 못하셨나요?
           </h3>
           <p className="text-amber-700 mb-4">
-            걱정하지 마세요. 취향 분석을 통해 나에게 딱 맞는 큐레이터를 찾아드릴게요.
+            간단한 설문을 통해 당신에게 딱 맞는 큐레이터를 찾아드릴게요.
           </p>
-          <Button className="cozy-gradient text-white hover:opacity-90 transition-opacity">
-            나만의 큐레이터 찾기
+          <Button 
+            className="cozy-gradient text-white hover:opacity-90 transition-opacity"
+            onClick={() => setShowSurvey(true)}
+          >
+            <Star className="h-4 w-4 mr-2" />
+            맞춤 큐레이터 찾기
           </Button>
         </div>
       </div>

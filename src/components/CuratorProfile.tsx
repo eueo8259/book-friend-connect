@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { ArrowLeft, Heart, Users, BookOpen, Star, MessageCircle, Share2, ExternalLink, ShoppingCart } from 'lucide-react';
+import { ArrowLeft, Heart, Users, BookOpen, Star, MessageCircle, Share2, ExternalLink, ShoppingCart, ThumbsUp, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Textarea } from '@/components/ui/textarea';
 
 interface Curator {
   id: number;
@@ -71,6 +72,76 @@ const recommendedBooks = [
 const CuratorProfile = ({ curator, onBack }: CuratorProfileProps) => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [selectedBook, setSelectedBook] = useState<number | null>(null);
+  const [userInteractions, setUserInteractions] = useState<any>({});
+  const [newMessage, setNewMessage] = useState('');
+  const [messages, setMessages] = useState([
+    {
+      id: 1,
+      type: 'curator',
+      message: `안녕하세요! ${curator.name}입니다. 오늘은 어떤 책이 궁금하신가요? 최근에 읽으신 책이나 관심 있는 장르를 알려주시면 더 맞춤형 추천을 드릴 수 있어요.`,
+      timestamp: new Date(Date.now() - 1000 * 60 * 30) // 30분 전
+    }
+  ]);
+
+  const handleBookRating = (bookId: number, rating: number) => {
+    const updatedInteractions = { ...userInteractions };
+    updatedInteractions[bookId] = { ...updatedInteractions[bookId], rating };
+    setUserInteractions(updatedInteractions);
+
+    // 큐레이터 응답 시뮬레이션
+    setTimeout(() => {
+      const book = recommendedBooks.find(b => b.id === bookId);
+      let response = '';
+      
+      if (rating >= 4) {
+        response = `${book?.title}를 좋게 평가해주셔서 감사해요! 비슷한 스타일의 다른 책도 추천해드릴까요?`;
+      } else if (rating >= 3) {
+        response = `${book?.title}에 대한 평가 감사합니다. 어떤 부분이 아쉬우셨는지 알려주시면 다음 추천에 반영하겠어요.`;
+      } else {
+        response = `${book?.title}가 취향에 맞지 않으셨군요. 다른 스타일의 책을 찾아보겠습니다. 평소 어떤 책을 좋아하시나요?`;
+      }
+
+      setMessages(prev => [...prev, {
+        id: Date.now(),
+        type: 'curator',
+        message: response,
+        timestamp: new Date()
+      }]);
+    }, 1000);
+  };
+
+  const handleSendMessage = () => {
+    if (!newMessage.trim()) return;
+
+    const userMsg = {
+      id: Date.now(),
+      type: 'user',
+      message: newMessage,
+      timestamp: new Date()
+    };
+
+    setMessages(prev => [...prev, userMsg]);
+    setNewMessage('');
+
+    // 큐레이터 자동 응답 시뮬레이션
+    setTimeout(() => {
+      const responses = [
+        "흥미로운 의견이네요! 그런 관점에서 본다면 이런 책은 어떠실까요?",
+        "정말 좋은 질문입니다. 제가 추천한 책들 중에서도 그런 테마를 다룬 작품이 있어요.",
+        "그렇게 생각하시는군요! 개인적으로는 이런 작품도 추천드리고 싶어요.",
+        "공감합니다. 비슷한 경험을 하신 다른 독자분들도 많이 계세요."
+      ];
+
+      const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+      
+      setMessages(prev => [...prev, {
+        id: Date.now() + 1,
+        type: 'curator',
+        message: randomResponse,
+        timestamp: new Date()
+      }]);
+    }, 1500);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
@@ -176,9 +247,12 @@ const CuratorProfile = ({ curator, onBack }: CuratorProfileProps) => {
 
         {/* 탭 메뉴 */}
         <Tabs defaultValue="books" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 bg-white/70 backdrop-blur-sm">
+          <TabsList className="grid w-full grid-cols-4 bg-white/70 backdrop-blur-sm">
             <TabsTrigger value="books" className="data-[state=active]:bg-amber-100 data-[state=active]:text-amber-900">
               추천 도서
+            </TabsTrigger>
+            <TabsTrigger value="interaction" className="data-[state=active]:bg-amber-100 data-[state=active]:text-amber-900">
+              개인 상담
             </TabsTrigger>
             <TabsTrigger value="story" className="data-[state=active]:bg-amber-100 data-[state=active]:text-amber-900">
               큐레이터 스토리
@@ -192,7 +266,7 @@ const CuratorProfile = ({ curator, onBack }: CuratorProfileProps) => {
           <TabsContent value="books" className="mt-6">
             <div className="grid gap-6">
               {recommendedBooks.map((book) => (
-                <Card key={book.id} className="soft-shadow border-0 bg-white/70 backdrop-blur-sm hover:bg-white/90 transition-all cursor-pointer">
+                <Card key={book.id} className="soft-shadow border-0 bg-white/70 backdrop-blur-sm hover:bg-white/90 transition-all">
                   <CardContent className="p-6">
                     <div className="flex gap-6">
                       <img 
@@ -219,17 +293,40 @@ const CuratorProfile = ({ curator, onBack }: CuratorProfileProps) => {
                           {book.reason}
                         </p>
 
-                        {/* 큐레이터의 개인적인 메시지 */}
                         <div className="bg-gradient-to-r from-orange-50 to-amber-50 rounded-lg p-3 mb-4">
                           <p className="text-sm text-amber-800 italic">
                             💭 {curator.name}의 한마디: "{book.personalMessage}"
                           </p>
                         </div>
 
-                        {/* 도서 정보 */}
                         <div className="flex items-center gap-4 text-sm text-amber-600 mb-4">
                           <span>📖 {book.readingTime}</span>
                           <span>📊 {book.difficulty}</span>
+                        </div>
+
+                        {/* 평점 및 상호작용 */}
+                        <div className="bg-amber-50/50 rounded-lg p-3 mb-4">
+                          <p className="text-sm text-amber-700 mb-2">이 책은 어떠셨나요?</p>
+                          <div className="flex items-center gap-2">
+                            {[1, 2, 3, 4, 5].map((rating) => (
+                              <button
+                                key={rating}
+                                onClick={() => handleBookRating(book.id, rating)}
+                                className={`p-1 rounded ${
+                                  userInteractions[book.id]?.rating >= rating
+                                    ? 'text-amber-400'
+                                    : 'text-gray-300 hover:text-amber-300'
+                                }`}
+                              >
+                                <Star className="h-4 w-4 fill-current" />
+                              </button>
+                            ))}
+                            {userInteractions[book.id]?.rating && (
+                              <span className="text-sm text-amber-600 ml-2">
+                                평가해주셔서 감사해요!
+                              </span>
+                            )}
+                          </div>
                         </div>
 
                         <div className="flex gap-2">
@@ -237,23 +334,18 @@ const CuratorProfile = ({ curator, onBack }: CuratorProfileProps) => {
                             className="cozy-gradient text-white hover:opacity-90"
                             onClick={() => window.open(book.purchaseUrl, '_blank')}
                           >
-                            <ShoppingCart className="h-4 w-4 mr-1" />
-                            책 구매하기
+                            <ExternalLink className="h-4 w-4 mr-1" />
+                            교보문고에서 구매
                           </Button>
                           <Button 
                             variant="outline" 
                             className="border-amber-200 text-amber-700 hover:bg-amber-50"
                             onClick={() => {
-                              // 위시리스트 추가 로직
                               alert('읽고 싶은 책에 추가되었습니다! 📚');
                             }}
                           >
                             <Heart className="h-4 w-4 mr-1" />
                             읽고 싶어요
-                          </Button>
-                          <Button variant="outline" className="border-amber-200 text-amber-700 hover:bg-amber-50">
-                            <MessageCircle className="h-4 w-4 mr-1" />
-                            후기 보기
                           </Button>
                         </div>
                       </div>
@@ -262,6 +354,53 @@ const CuratorProfile = ({ curator, onBack }: CuratorProfileProps) => {
                 </Card>
               ))}
             </div>
+          </TabsContent>
+
+          {/* 개인 상담 탭 */}
+          <TabsContent value="interaction" className="mt-6">
+            <Card className="soft-shadow border-0 bg-white/70 backdrop-blur-sm">
+              <CardContent className="p-6">
+                <h3 className="text-xl font-bold text-amber-900 mb-4">
+                  💬 {curator.name}님과의 개인 상담
+                </h3>
+                <p className="text-amber-700 mb-6">
+                  궁금한 것이 있으시면 언제든 편하게 물어보세요. 개인 맞춤 추천을 도와드릴게요!
+                </p>
+
+                <div className="space-y-4 mb-6 max-h-96 overflow-y-auto">
+                  {messages.map((msg) => (
+                    <div key={msg.id} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+                      <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${
+                        msg.type === 'user' 
+                          ? 'bg-amber-500 text-white' 
+                          : 'bg-white border border-amber-200 text-amber-900'
+                      }`}>
+                        <p className="text-sm">{msg.message}</p>
+                        <p className="text-xs opacity-70 mt-1">
+                          {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex gap-2">
+                  <Textarea
+                    placeholder="궁금한 점을 자유롭게 물어보세요..."
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    className="flex-1 bg-white/70 border-amber-200"
+                    rows={2}
+                  />
+                  <Button 
+                    onClick={handleSendMessage}
+                    className="cozy-gradient text-white hover:opacity-90"
+                  >
+                    <MessageSquare className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* 큐레이터 스토리 탭 */}
